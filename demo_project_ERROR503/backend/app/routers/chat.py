@@ -8,6 +8,7 @@ import re
 
 from fastapi import APIRouter, HTTPException
 
+from app.eval_logger import log_interaction
 from app.ingestion.indexer import read_page_index
 from app.llm_provider import LLMProvider, LLMProviderError, get_provider
 from app.models.schemas import ChatRequest, ChatResponse
@@ -25,6 +26,17 @@ def _get_provider() -> LLMProvider:
     if _provider is None:
         _provider = get_provider()
     return _provider
+
+
+# Bắt số trang gõ tường minh trong câu hỏi (VD: "Trang 26 nói về điều gì?",
+# "slide 12", "page5") — ưu tiên cao nhất, phải tôn trọng tuyệt đối, chạy
+# TRƯỚC khi xét tới checkbox "dùng trang đang xem" hay keyword-matching mock.
+_PAGE_HINT_PATTERN = re.compile(r"(?:trang|slide|page)\s*#?\s*(\d+)", re.IGNORECASE)
+
+
+def _extract_page_hint_from_text(message: str) -> int | None:
+    match = _PAGE_HINT_PATTERN.search(message)
+    return int(match.group(1)) if match else None
 
 
 _AMBIGUOUS_MARKERS = ["đoạn này", "cái này", "chỗ này", "phần này", "giải thích"]
@@ -50,6 +62,12 @@ def chat(req: ChatRequest) -> ChatResponse:
     if not page_index:
         raise HTTPException(status_code=404, detail="doc_id không tồn tại, hãy upload trước")
 
+    response = _route(req, page_index)
+    log_interaction(req, response)
+    return response
+
+
+def _route(req: ChatRequest, page_index: dict[str, str]) -> ChatResponse:
     if req.selected_text and req.selected_text.strip():
         return _summarize_selection(req.selected_text.strip())
 
@@ -60,7 +78,13 @@ def chat(req: ChatRequest) -> ChatResponse:
     if not message:
         raise HTTPException(status_code=400, detail="message rỗng")
 
-    if not req.page_hint and _looks_ambiguous(message):
+    # Thứ tự ưu tiên page_hint: (a) số trang gõ tường minh trong câu hỏi
+    # > (b) checkbox "dùng trang đang xem" từ frontend (req.page_hint) >
+    # (c) không có gì → fallback keyword-matching mock trong _locate_extract.
+    text_page_hint = _extract_page_hint_from_text(message)
+    page_hint = text_page_hint if text_page_hint is not None else req.page_hint
+
+    if not page_hint and _looks_ambiguous(message):
         return ChatResponse(
             mode="clarification",
             needs_clarification=True,
@@ -70,7 +94,7 @@ def chat(req: ChatRequest) -> ChatResponse:
             ),
         )
 
-    return _locate_extract(message, req.page_hint, page_index)
+    return _locate_extract(message, page_hint, page_index)
 
 
 def _summarize_selection(selected_text: str) -> ChatResponse:
@@ -86,14 +110,28 @@ def _summarize_selection(selected_text: str) -> ChatResponse:
 
 
 def _summarize_progress(up_to_page: int, page_index: dict[str, str]) -> ChatResponse:
+    """Tóm tắt đơn giản (1 call Gemini trên toàn bộ text gộp từ trang 1..N).
+
+    Chưa phải map-reduce từng trang + cache theo (doc_id, up_to_page) như
+    CLAUDE.md mô tả cho bản MVP cuối cùng (việc đó thuộc M5) — đây là bản
+    rút gọn để demo lệnh "tóm tắt tài liệu" chạy được với Gemini thật.
+    """
     n = min(up_to_page, len(page_index))
-    return ChatResponse(
-        mode="summarize_progress",
-        answer=(
-            f"[Demo] Tóm tắt tiến độ từ trang 1 đến trang {n}: bài giảng đã đi qua "
-            f"{n} slide nội dung chính. (map-reduce thật theo page_index sẽ làm ở M4.)"
-        ),
+    pages_text = "\n\n".join(
+        page_index[str(p)] for p in range(1, n + 1) if page_index.get(str(p))
     )
+    if not pages_text.strip():
+        return ChatResponse(mode="summarize_progress", answer="Chưa có nội dung để tóm tắt.")
+
+    try:
+        provider = _get_provider()
+        answer = "".join(provider.summarize_stream(pages_text))
+    except LLMProviderError as exc:
+        return ChatResponse(
+            mode="summarize_progress",
+            answer=f"Không thể tóm tắt lúc này ({exc}). Vui lòng thử lại sau.",
+        )
+    return ChatResponse(mode="summarize_progress", answer=answer)
 
 
 def _looks_ambiguous(message: str) -> bool:
@@ -110,14 +148,31 @@ def _locate_extract(message: str, page_hint: int | None, page_index: dict[str, s
     if page is None:
         return ChatResponse(
             mode="locate_extract",
-            answer="[Demo] Không tìm thấy nội dung khớp với câu hỏi trong tài liệu.",
+            answer="Không tìm thấy nội dung khớp với câu hỏi trong tài liệu.",
         )
 
-    return ChatResponse(
-        mode="locate_extract",
-        citation_page=page,
-        answer=f"[Demo] Nội dung liên quan tới câu hỏi của bạn nằm ở trang {page}.",
-    )
+    page_text = page_index.get(str(page), "")
+    if not page_text.strip():
+        return ChatResponse(
+            mode="locate_extract",
+            citation_page=page,
+            answer=f"Trang {page} không có nội dung văn bản (có thể là hình ảnh/slide trống).",
+        )
+
+    # Nội dung trả về phải đúng với text gốc lấy từ page_index (ground-truth
+    # từ PDF, không suy diễn) — chỉ dùng LLM để tóm tắt ngắn gọn, dễ hiểu,
+    # không phải để "trả lời" tự do ngoài nội dung trang đã tìm được.
+    try:
+        provider = _get_provider()
+        answer = "".join(provider.summarize_stream(page_text))
+    except LLMProviderError as exc:
+        return ChatResponse(
+            mode="locate_extract",
+            citation_page=page,
+            answer=f"Không thể tóm tắt nội dung trang {page} lúc này ({exc}). Vui lòng thử lại sau.",
+        )
+
+    return ChatResponse(mode="locate_extract", citation_page=page, answer=answer)
 
 
 def _keyword_search(message: str, page_index: dict[str, str]) -> int | None:

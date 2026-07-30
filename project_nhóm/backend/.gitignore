@@ -1,7 +1,0 @@
-.venv/
-__pycache__/
-*.pyc
-.env
-storage/uploads/*.pdf
-storage/chroma_db/
-storage/page_index/*.json
