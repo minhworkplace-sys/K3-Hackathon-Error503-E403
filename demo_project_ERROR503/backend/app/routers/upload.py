@@ -2,10 +2,10 @@ import uuid
 
 from fastapi import APIRouter, HTTPException, UploadFile
 
-from app.config import UPLOADS_DIR
+from app.config import UPLOADS_DIR, SLIDES_DIR
 from app.ingestion.chunker import chunk_by_slide
 from app.ingestion.indexer import index_chunks, write_page_index
-from app.ingestion.pdf_parser import parse_pdf
+from app.ingestion.pdf_parser import parse_pdf, render_pdf_to_images
 from app.models.schemas import UploadResponse
 
 router = APIRouter()
@@ -25,6 +25,7 @@ async def upload_pdf(file: UploadFile) -> UploadResponse:
 
     try:
         pages = parse_pdf(str(dest_path))
+        render_pdf_to_images(str(dest_path), SLIDES_DIR / doc_id)
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"Không parse được PDF: {exc}") from exc
 

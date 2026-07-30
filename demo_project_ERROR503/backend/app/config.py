@@ -9,8 +9,9 @@ STORAGE_DIR = BACKEND_DIR / "storage"
 UPLOADS_DIR = STORAGE_DIR / "uploads"
 CHROMA_DIR = STORAGE_DIR / "chroma_db"
 PAGE_INDEX_DIR = STORAGE_DIR / "page_index"
+SLIDES_DIR = STORAGE_DIR / "slides"
 
-for d in (UPLOADS_DIR, CHROMA_DIR, PAGE_INDEX_DIR):
+for d in (UPLOADS_DIR, CHROMA_DIR, PAGE_INDEX_DIR, SLIDES_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
 CHROMA_COLLECTION_NAME = "slides"

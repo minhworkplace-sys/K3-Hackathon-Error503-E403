@@ -1,3 +1,5 @@
+
+
 import { useState } from 'react'
 
 const API_BASE = 'http://localhost:8000'
@@ -165,6 +167,11 @@ function App() {
     await callChat({ up_to_page: currentPage })
   }
 
+  const handleSummarizeCurrentSlide = async () => {
+    pushMessage({ role: 'user', text: `(Tóm tắt slide trang ${currentPage})` })
+    await callChat({ message: `Hãy tóm tắt slide trang ${currentPage}`, page_hint: currentPage })
+  }
+
   // "Giải thích ngay" / "Để sau" map thẳng vào luồng clarification đã có ở
   // backend: gửi lại đúng câu hỏi kèm page_hint (bỏ qua nhánh ambiguous), hoặc
   // không gửi gì và chỉ đóng gợi ý lại.
@@ -330,6 +337,16 @@ function App() {
               <div className="h-6 w-[1px] bg-outline-variant" />
               <button
                 type="button"
+                onClick={handleSummarizeCurrentSlide}
+                disabled={chatBusy}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-primary bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Click để gửi yêu cầu tóm tắt riêng slide này cho AI Chatbot"
+              >
+                <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
+                <span className="font-label-bold text-label-bold">Tóm tắt slide {currentPage}</span>
+              </button>
+              <button
+                type="button"
                 onClick={handleSummarizeProgress}
                 disabled={chatBusy}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
@@ -348,18 +365,31 @@ function App() {
           </div>
 
           <div className="flex-1 overflow-auto p-8 custom-scrollbar flex justify-center bg-surface-dim/30">
-            <div className="w-full max-w-[900px] min-h-[600px] bg-white shadow-xl rounded-sm relative flex flex-col">
+            <div className="w-full max-w-[900px] min-h-[600px] bg-white shadow-xl rounded-sm relative flex flex-col items-center justify-center p-4">
               <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+              
               <div
-                onMouseUp={highlightActive ? handleTextSelect : undefined}
-                className="p-12 flex-1 whitespace-pre-wrap font-body-lg text-body-lg text-on-surface"
+                onClick={handleSummarizeCurrentSlide}
+                title="Click vào slide để yêu cầu Chatbot tóm tắt slide này"
+                className="flex-1 flex items-center justify-center w-full cursor-pointer relative group p-2"
               >
-                {activePageText || <em className="text-outline">(trang trống)</em>}
+                <img
+                  src={`${API_BASE}/slides/${doc.doc_id}/page_${currentPage}.png`}
+                  alt={`Slide trang ${currentPage}`}
+                  className="max-w-full max-h-[70vh] object-contain rounded shadow-md border border-outline-variant transition-transform group-hover:scale-[1.01]"
+                />
+                <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">
+                  <span className="bg-primary text-white text-xs px-3 py-1.5 rounded-full shadow-lg font-bold flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+                    Click để chatbot tóm tắt slide trang {currentPage}
+                  </span>
+                </div>
               </div>
-              <div className="p-6 border-t border-surface-container-high flex justify-between items-center text-[11px] text-outline font-medium">
+
+              <div className="w-full p-4 border-t border-surface-container-high flex justify-between items-center text-[11px] text-outline font-medium">
                 <span>{doc.filename}</span>
                 <span>
-                  Trang {currentPage} / {doc.num_pages}
+                  Slide trang {currentPage} / {doc.num_pages}
                 </span>
               </div>
             </div>
