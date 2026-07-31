@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VLearn - Modern Corporate LMS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-surface": "#2d3133",
+                        "surface-tint": "#3d5ca2",
+                        "on-secondary-container": "#6c4d00",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary": "#001a48",
+                        "surface": "#f7f9fb",
+                        "outline": "#747782",
+                        "on-tertiary-fixed-variant": "#004d62",
+                        "secondary": "#7c5800",
+                        "secondary-container": "#febb21",
+                        "on-tertiary-fixed": "#001f29",
+                        "tertiary-fixed-dim": "#5cd4ff",
+                        "primary-fixed": "#dae2ff",
+                        "on-tertiary-container": "#00a6d0",
+                        "on-secondary-fixed": "#271900",
+                        "on-primary-container": "#7a97e2",
+                        "outline-variant": "#c4c6d2",
+                        "surface-variant": "#e0e3e5",
+                        "primary-container": "#002d72",
+                        "surface-bright": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#eff1f3",
+                        "inverse-primary": "#b1c5ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#224489",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "on-primary-fixed": "#001946",
+                        "on-surface-variant": "#444651",
+                        "on-background": "#191c1e",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdea6",
+                        "secondary-fixed-dim": "#febb21",
+                        "surface-container": "#eceef0",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "surface-container-high": "#e6e8ea",
+                        "on-surface": "#191c1e",
+                        "tertiary-container": "#003646",
+                        "surface-dim": "#d8dadc",
+                        "tertiary-fixed": "#baeaff",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "background": "#f7f9fb",
+                        "tertiary": "#00202a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "8px",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "stack-md": "1rem",
+                        "gutter": "1.5rem",
+                        "chat-width": "360px",
+                        "sidebar-width": "280px",
+                        "container-max": "1440px",
+                        "margin-page": "2rem"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "headline-sm": ["Manrope"],
+                        "label-sm": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .active-tab-shadow {
+            box-shadow: 0 4px 12px rgba(0, 45, 114, 0.08);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c4c6d2;
+            border-radius: 10px;
+        }
+
+        /* Chatbot floating button */
+        #chatbot-fab {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 9999;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #001a48 0%, #3d5ca2 100%);
+            box-shadow: 0 6px 24px rgba(0,26,72,0.30), 0 2px 8px rgba(61,92,162,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s;
+            outline: none;
+        }
+        #chatbot-fab:hover {
+            transform: scale(1.10) translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,26,72,0.35), 0 4px 12px rgba(61,92,162,0.22);
+        }
+        #chatbot-fab:active {
+            transform: scale(0.95);
+        }
+        #chatbot-fab .fab-icon {
+            transition: opacity 0.18s, transform 0.18s;
+        }
+        #chatbot-fab .fab-icon-close {
+            position: absolute;
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.7);
+            transition: opacity 0.18s, transform 0.18s;
+        }
+        #chatbot-fab.open .fab-icon-bot {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.7);
+        }
+        #chatbot-fab.open .fab-icon-close {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        /* Pulse ring animation */
+        #chatbot-fab::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(61,92,162,0.25);
+            animation: pulse-ring 2.2s cubic-bezier(0.455,0.03,0.515,0.955) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.7; }
+            70% { transform: scale(1.55); opacity: 0; }
+            100% { transform: scale(1.55); opacity: 0; }
+        }
+
+        /* Chat panel slide transition */
+        #chat-aside {
+            transition: transform 0.38s cubic-bezier(.4,0,.2,1), opacity 0.30s;
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #chat-aside.chat-open {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Tooltip for FAB */
+        #chatbot-fab .fab-tooltip {
+            position: absolute;
+            right: 72px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #001a48;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            padding: 6px 12px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s;
+        }
+        #chatbot-fab:hover .fab-tooltip {
+            opacity: 1;
+        }
+
+        /* ── Selection Context Banner ─────────────────────────────────── */
+        #selection-banner {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.36s cubic-bezier(.4,0,.2,1), opacity 0.28s;
+        }
+        #selection-banner.banner-visible {
+            max-height: 200px;
+            opacity: 1;
+        }
+        .quick-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1.5px solid;
+            transition: background 0.16s, color 0.16s, transform 0.12s;
+            white-space: nowrap;
+        }
+        .quick-chip:hover { transform: translateY(-1px); }
+        .quick-chip-primary {
+            background: #001a48;
+            border-color: #001a48;
+            color: #fff;
+        }
+        .quick-chip-primary:hover { background: #002d72; border-color: #002d72; }
+        .quick-chip-outline {
+            background: transparent;
+            border-color: #c4c6d2;
+            color: #444651;
+        }
+        .quick-chip-outline:hover { background: #f2f4f6; }
+
+        /* Typing indicator */
+        .typing-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #7a97e2;
+            animation: bounce-dot 1.2s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.18s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.36s; }
+        @keyframes bounce-dot {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        /* Slide select button highlight */
+        .slide-select-btn.active {
+            outline: 2px solid #3d5ca2;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background overflow-hidden h-screen flex flex-col">
+    <!-- TopNavBar -->
+    <header
+        class="flex justify-between items-center w-full px-gutter h-16 z-50 bg-surface border-b border-outline-variant">
+        <div class="flex items-center gap-8">
+            <h1 class="font-headline-md text-headline-md font-extrabold text-primary">VLearn</h1>
+            <div class="hidden md:flex items-center gap-4">
+                <nav class="flex items-center gap-6">
+                    <a class="text-primary font-bold border-b-2 border-primary py-4 font-label-bold text-label-bold transition-all"
+                        href="#">My Courses</a>
+                    <a class="text-on-surface-variant hover:text-primary py-4 font-label-bold text-label-bold transition-all"
+                        href="#">Resources</a>
+                    <a class="text-on-surface-variant hover:text-primary py-4 font-label-bold text-label-bold transition-all"
+                        href="#">Schedule</a>
+                </nav>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="relative flex items-center bg-surface-container-high rounded-full px-4 py-2 w-64">
+                <span class="material-symbols-outlined text-outline text-[20px] mr-2">search</span>
+                <input class="bg-transparent border-none focus:ring-0 text-body-sm w-full p-0"
+                    placeholder="Search in course..." type="text" />
+            </div>
+            <button
+                class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-colors active:scale-95 duration-150">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button
+                class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-colors active:scale-95 duration-150">
+                <span class="material-symbols-outlined">settings</span>
+            </button>
+            <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+                <img class="w-full h-full object-cover"
+                    data-alt="Close up professional headshot of a student for an academic profile, soft natural lighting, high resolution, minimalist grey background, clean corporate aesthetic."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN9Co3nwQ7FA4CgdNcjS5RdesQvazbBiqxpxsDlOXBYlX6ArPtvjCTX2i3AArMIgn27Z_bjTlFKNVeUkiPka8nllYCC006riAbYQ-EJcV2yktBsxluSP7SNVYQ8vQHA1FeeRGZn_2hJdHwpSzhudHhmevPGzZCJa_MX9bKDMDTL1xlptjZv2ss5_0OkehDJbEGZq0yXUb1mbh12agItmpksgcvUbuzFkom-z9BAGvpg1qMTAY61yb5" />
+            </div>
+        </div>
+    </header>
+    <main class="flex-1 flex overflow-hidden">
+        <!-- SideNavBar (Left Sidebar) -->
+        <aside
+            class="fixed left-0 top-16 bottom-0 w-sidebar-width flex flex-col z-40 bg-surface-container border-r border-outline-variant">
+            <div class="p-6">
+                <h2 class="font-headline-sm text-headline-sm text-primary mb-1">CS101: AI Basics</h2>
+                <p class="font-body-sm text-body-sm text-outline">Modern Corporate LMS</p>
+            </div>
+            <nav class="flex-1 overflow-y-auto px-3 py-2 space-y-1 custom-scrollbar">
+                <div class="px-3 mb-2">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-outline">Curriculum</span>
+                </div>
+                <!-- Day List -->
+                <button
+                    class="w-full flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all group">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    <span class="font-label-bold text-label-bold">Day 01 - Intro to AI</span>
+                </button>
+                <button
+                    class="w-full flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all group">
+                    <span class="material-symbols-outlined text-[20px]">list_alt</span>
+                    <span class="font-label-bold text-label-bold">Day 02 - Data Ethics</span>
+                </button>
+                <button
+                    class="w-full flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all group">
+                    <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                    <span class="font-label-bold text-label-bold">Day 03 - Machine Learning</span>
+                </button>
+                <button
+                    class="w-full flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all group">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                    <span class="font-label-bold text-label-bold">Day 04 - Deep Learning</span>
+                </button>
+                <button
+                    class="w-full flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all group">
+                    <span class="material-symbols-outlined text-[20px]">folder_open</span>
+                    <span class="font-label-bold text-label-bold">Day 05 - NLP Foundations</span>
+                </button>
+                <!-- Active Item -->
+                <button
+                    class="w-full flex items-center gap-3 bg-primary-container text-on-primary-container font-bold rounded-lg px-4 py-3 active-tab-shadow translate-x-1 transition-all duration-200">
+                    <span class="material-symbols-outlined text-[20px]"
+                        style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                    <span class="font-label-bold text-label-bold">Day 06 - AI Product...</span>
+                </button>
+                <div class="px-3 pt-6 mb-2">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-outline">Shortcuts</span>
+                </div>
+                <button
+                    class="w-full flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-surface-container-high rounded-lg transition-all">
+                    <span class="material-symbols-outlined text-[20px]">help</span>
+                    <span class="font-label-bold text-label-bold">Help Center</span>
+                </button>
+            </nav>
+            <div class="p-4 border-t border-outline-variant/30">
+                <button
+                    class="w-full bg-primary text-white py-3 rounded-lg font-label-bold text-label-bold hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">videocam</span>
+                    Join Live Session
+                </button>
+            </div>
+        </aside>
+        <!-- Center Stage: PDF Viewer -->
+        <section
+            class="flex-1 ml-sidebar-width mr-chat-width bg-surface-container-low flex flex-col relative overflow-hidden">
+            <!-- PDF Toolbar -->
+            <div class="h-14 bg-surface border-b border-outline-variant flex items-center justify-between px-6 z-30">
+                <div class="flex items-center gap-1">
+                    <button
+                        class="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant flex items-center gap-2 px-3">
+                        <span class="material-symbols-outlined text-[20px]">menu</span>
+                    </button>
+                    <div class="h-6 w-[1px] bg-outline-variant mx-2"></div>
+                    <button class="p-2 text-primary bg-primary-container/20 rounded-lg flex items-center gap-2 px-3">
+                        <span class="material-symbols-outlined text-[20px]"
+                            style="font-variation-settings: 'FILL' 1;">visibility</span>
+                        <span class="font-label-bold text-label-bold">Đọc</span>
+                    </button>
+                    <button
+                        class="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant flex items-center gap-2 px-3">
+                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                        <span class="font-label-bold text-label-bold">Bút</span>
+                    </button>
+                    <button
+                        class="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant flex items-center gap-2 px-3">
+                        <span class="material-symbols-outlined text-[20px]">highlighter_size_3</span>
+                        <span class="font-label-bold text-label-bold">Highlight</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center bg-surface-container-high rounded-lg px-2 py-1">
+                        <button class="p-1 hover:bg-surface-container-highest rounded transition-colors"><span
+                                class="material-symbols-outlined text-[18px]">remove</span></button>
+                        <span class="px-3 font-label-bold text-label-bold">125%</span>
+                        <button class="p-1 hover:bg-surface-container-highest rounded transition-colors"><span
+                                class="material-symbols-outlined text-[18px]">add</span></button>
+                    </div>
+                    <div class="flex items-center gap-2 font-label-bold text-label-bold text-on-surface-variant">
+                        <span class="bg-surface-container-high px-2 py-1 rounded">1</span>
+                        <span>/ 37</span>
+                    </div>
+                    <div class="h-6 w-[1px] bg-outline-variant"></div>
+                    <button class="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[20px]">download</span>
+                    </button>
+                    <button class="p-2 hover:bg-surface-container rounded-lg text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[20px]">print</span>
+                    </button>
+                </div>
+            </div>
+            <!-- PDF Content Area -->
+            <div class="flex-1 overflow-auto p-8 custom-scrollbar flex justify-center bg-surface-dim/30">
+                <div
+                    class="w-full max-w-[900px] aspect-[16/9] bg-white shadow-xl rounded-sm relative overflow-hidden flex flex-col">
+                    <!-- Slide Header Visual -->
+                    <div class="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+                    <div class="p-12 flex-1 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white">architecture</span>
+                            </div>
+                            <span class="text-primary font-bold tracking-widest text-[12px] uppercase">Lecture Series
+                                2024</span>
+                        </div>
+                        <h1 class="font-headline-lg text-headline-lg text-primary leading-tight max-w-2xl">
+                            AI Product &amp; <br />Project Management
+                        </h1>
+                        <div class="mt-8 h-1 w-24 bg-secondary"></div>
+                        <p class="mt-8 font-body-lg text-body-lg text-outline max-w-xl">
+                            Bridging the gap between machine learning research and scalable commercial products.
+                        </p>
+                    </div>
+                    <div
+                        class="p-6 border-t border-surface-container-high flex justify-between items-center text-[11px] text-outline font-medium">
+                        <span>VLearn Professional Education</span>
+                        <span>Slide 1 / 37</span>
+                    </div>
+                    <!-- Decorative Element -->
+                    <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full border-[1px] border-primary/5">
+                    </div>
+                    <div class="absolute -bottom-10 -right-10 w-40 h-40 rounded-full border-[1px] border-primary/10">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Right Side Panel: VLearn Tutor -->
+        <aside id="chat-aside"
+            class="fixed right-0 top-16 bottom-0 w-chat-width flex flex-col z-40 glass-panel border-l border-outline-variant shadow-sm">
+            <!-- AI Header -->
+            <div class="p-4 border-b border-outline-variant flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-on-primary-container flex items-center justify-center shadow-md">
+                        <span class="material-symbols-outlined text-white text-[22px]"
+                            style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-sm text-[16px] text-primary leading-none">VLearn Tutor</h3>
+                        <p class="text-[10px] text-on-tertiary-container font-semibold uppercase mt-1">Trợ lý học tập
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="p-2 text-outline hover:bg-surface-container rounded-full"><span
+                            class="material-symbols-outlined">more_vert</span></button>
+                    <!-- Close / X button -->
+                    <button id="chat-close-btn" title="Đóng chat"
+                        class="p-2 text-outline hover:bg-red-50 hover:text-red-500 rounded-full transition-colors">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Selection Context Banner -->
+            <div id="selection-banner" class="border-b border-amber-200/80">
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 px-3 py-3">
+                    <!-- Header row -->
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-amber-600 text-[16px]"
+                                style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                            <span id="banner-label" class="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Đoạn văn được chọn</span>
+                        </div>
+                        <button id="banner-dismiss" class="p-1 text-amber-400 hover:text-amber-700 rounded-full transition-colors">
+                            <span class="material-symbols-outlined text-[16px]">close</span>
+                        </button>
+                    </div>
+                    <!-- Selected text preview -->
+                    <div id="selection-preview"
+                        class="text-[12px] text-amber-900 bg-white/70 border border-amber-200 rounded-lg px-3 py-2 mb-3 leading-relaxed line-clamp-2 font-medium">
+                    </div>
+                    <!-- Quick action chips -->
+                    <div class="flex flex-wrap gap-1.5">
+                        <button class="quick-chip quick-chip-primary" onclick="triggerAction('summarize')">
+                            <span class="material-symbols-outlined text-[13px]"
+                                style="font-variation-settings: 'FILL' 1;">summarize</span>
+                            Tóm tắt
+                        </button>
+                        <button class="quick-chip quick-chip-outline" onclick="triggerAction('explain')">
+                            <span class="material-symbols-outlined text-[13px]">lightbulb</span>
+                            Giải thích
+                        </button>
+                        <button class="quick-chip quick-chip-outline" onclick="triggerAction('translate')">
+                            <span class="material-symbols-outlined text-[13px]">translate</span>
+                            Dịch
+                        </button>
+                        <button class="quick-chip quick-chip-outline" onclick="triggerAction('quiz')">
+                            <span class="material-symbols-outlined text-[13px]">quiz</span>
+                            Đặt câu hỏi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Chat Content -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                <!-- AI Message 1 -->
+                <div class="flex flex-col gap-2">
+                    <div
+                        class="max-w-[85%] bg-surface-container-high text-on-surface p-3 rounded-2xl rounded-tl-none font-body-md text-body-md">
+                        Chào bạn! Tôi thấy bạn đang đọc slide về Quản lý sản phẩm AI. Đây là tóm tắt nhanh cho slide
+                        này:
+                    </div>
+                </div>
+                <!-- Highlight Box (Summary Block) -->
+                <div class="bg-primary/5 border border-primary/10 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center gap-2 text-primary">
+                        <span class="material-symbols-outlined text-[18px]"
+                            style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        <span class="font-label-bold text-label-bold">AI Product &amp; Project Management</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+                            <strong class="text-primary">Nội dung chính:</strong> Giới thiệu về quy trình quản lý sản
+                            phẩm AI, sự khác biệt giữa AI Product và sản phẩm phần mềm truyền thống.
+                        </p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span
+                                class="px-2 py-1 bg-white border border-primary/10 rounded text-[10px] font-bold text-primary">AI
+                                Lifecycle</span>
+                            <span
+                                class="px-2 py-1 bg-white border border-primary/10 rounded text-[10px] font-bold text-primary">Stakeholder
+                                Management</span>
+                            <span
+                                class="px-2 py-1 bg-white border border-primary/10 rounded text-[10px] font-bold text-primary">Agile
+                                for AI</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- AI Message 2 -->
+                <div class="flex flex-col gap-2">
+                    <div
+                        class="max-w-[85%] bg-surface-container-high text-on-surface p-3 rounded-2xl rounded-tl-none font-body-md text-body-md">
+                        Bạn có muốn tôi giải thích kỹ hơn về phần 'Thay đổi yêu cầu từ Stakeholder' ở trang tiếp theo
+                        không?
+                    </div>
+                    <div class="flex gap-2">
+                        <button
+                            class="text-[12px] font-bold px-3 py-1.5 border border-primary text-primary rounded-full hover:bg-primary hover:text-white transition-all">Giải
+                            thích ngay</button>
+                        <button
+                            class="text-[12px] font-bold px-3 py-1.5 border border-outline-variant text-outline rounded-full hover:bg-surface-container-high transition-all">Để
+                            sau</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Chat Input -->
+            <div class="p-4 bg-white border-t border-outline-variant">
+                <div class="relative group">
+                    <textarea
+                        class="w-full bg-surface-container-low border-outline-variant rounded-xl p-4 pr-12 focus:ring-2 focus:ring-on-primary-container focus:border-transparent text-body-md resize-none transition-all group-focus-within:bg-white"
+                        placeholder="Nhập câu hỏi hoặc bôi đen tài liệu..." rows="2"></textarea>
+                    <button
+                        class="absolute right-3 bottom-3 p-2 bg-primary text-white rounded-lg hover:bg-primary-container transition-all active:scale-90 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[20px]">send</span>
+                    </button>
+                </div>
+                <div class="flex justify-between items-center mt-3 px-1">
+                    <div class="flex gap-3">
+                        <button class="text-outline hover:text-primary transition-colors"><span
+                                class="material-symbols-outlined text-[20px]">attach_file</span></button>
+                        <button class="text-outline hover:text-primary transition-colors"><span
+                                class="material-symbols-outlined text-[20px]">mic</span></button>
+                        <button class="text-outline hover:text-primary transition-colors"><span
+                                class="material-symbols-outlined text-[20px]">image</span></button>
+                    </div>
+                    <span class="text-[10px] font-medium text-outline">Powered by VLearn AI v4.0</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Floating Chatbot Button -->
+    <button id="chatbot-fab" aria-label="Mở trợ lý VLearn">
+        <!-- Bot icon -->
+        <span class="fab-icon fab-icon-bot material-symbols-outlined text-white text-[28px]"
+            style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+        <!-- Close icon -->
+        <span class="fab-icon fab-icon-close material-symbols-outlined text-white text-[24px]">close</span>
+        <!-- Tooltip -->
+        <span class="fab-tooltip">VLearn Tutor</span>
+    </button>
+    <script>
+        // ── Chatbot FAB toggle ──────────────────────────────────────────────
+        const fab = document.getElementById('chatbot-fab');
+        const chatAside = document.getElementById('chat-aside');
+        const chatCloseBtn = document.getElementById('chat-close-btn');
+        const centerSection = document.querySelector('main > section');
+        const selectionBanner = document.getElementById('selection-banner');
+        const selectionPreview = document.getElementById('selection-preview');
+        const bannerLabel = document.getElementById('banner-label');
+        const bannerDismiss = document.getElementById('banner-dismiss');
+        const chatMessages = document.getElementById('chat-messages');
+
+        let currentSelection = '';
+
+        function openChat() {
+            chatAside.classList.add('chat-open');
+            fab.classList.add('open');
+            centerSection.style.marginRight = 'var(--spacing-chat-width, 360px)';
+        }
+
+        function closeChat() {
+            chatAside.classList.remove('chat-open');
+            fab.classList.remove('open');
+            centerSection.style.marginRight = '0';
+            hideBanner();
+        }
+
+        function showBanner(text, label) {
+            selectionPreview.textContent = text;
+            bannerLabel.textContent = label || 'Đoạn văn được chọn';
+            selectionBanner.classList.add('banner-visible');
+        }
+
+        function hideBanner() {
+            selectionBanner.classList.remove('banner-visible');
+            currentSelection = '';
+        }
+
+        // Quick action → add AI response mock
+        function triggerAction(type) {
+            const labels = {
+                summarize: 'Tóm tắt',
+                explain: 'Giải thích',
+                translate: 'Dịch sang tiếng Anh',
+                quiz: 'Đặt câu hỏi'
+            };
+            const label = labels[type] || type;
+
+            // Add user bubble
+            const userBubble = document.createElement('div');
+            userBubble.className = 'flex justify-end';
+            userBubble.innerHTML = `
+                <div class="max-w-[85%] bg-primary text-white p-3 rounded-2xl rounded-tr-none font-body-md text-body-md text-[13px] shadow-sm">
+                    ${label}: &ldquo;<em>${currentSelection.slice(0, 60)}${currentSelection.length > 60 ? '…' : ''}</em>&rdquo;
+                </div>`;
+            chatMessages.appendChild(userBubble);
+
+            // Typing indicator
+            const typingEl = document.createElement('div');
+            typingEl.className = 'flex items-center gap-2 pl-1';
+            typingEl.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-on-primary-container flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-white text-[14px]" style="font-variation-settings:'FILL' 1">smart_toy</span>
+                </div>
+                <div class="flex gap-1 bg-surface-container-high rounded-2xl rounded-tl-none px-4 py-3">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>`;
+            chatMessages.appendChild(typingEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            hideBanner();
+
+            // Mock AI reply after delay
+            setTimeout(() => {
+                typingEl.remove();
+                const replies = {
+                    summarize: 'Đây là tóm tắt nhanh cho đoạn bạn đã chọn: nội dung tập trung vào việc thu hẹp khoảng cách giữa nghiên cứu ML và sản phẩm thương mại có thể mở rộng.',
+                    explain: 'Đoạn này đề cập đến việc áp dụng quy trình quản lý sản phẩm vào bối cảnh AI — nơi yêu cầu thay đổi liên tục và dữ liệu đóng vai trò trung tâm.',
+                    translate: 'Translation: "Bridging the gap between machine learning research and scalable commercial products."',
+                    quiz: 'Câu hỏi: Sự khác biệt chính giữa AI Product và sản phẩm phần mềm truyền thống là gì? Gợi ý: hãy suy nghĩ về vai trò của dữ liệu và độ không chắc chắn.'
+                };
+                const aiReply = document.createElement('div');
+                aiReply.className = 'flex items-start gap-2';
+                aiReply.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-on-primary-container flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                        <span class="material-symbols-outlined text-white text-[14px]" style="font-variation-settings:'FILL' 1">smart_toy</span>
+                    </div>
+                    <div class="max-w-[85%] bg-surface-container-high text-on-surface p-3 rounded-2xl rounded-tl-none font-body-md text-[13px] leading-relaxed shadow-sm">
+                        ${replies[type] || 'Đang xử lý...'}
+                    </div>`;
+                chatMessages.appendChild(aiReply);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1400);
+        }
+
+        // ── Selection detection ─────────────────────────────────────────────
+        document.addEventListener('mouseup', () => {
+            const sel = window.getSelection();
+            const text = sel ? sel.toString().trim() : '';
+            if (text.length > 10) {
+                currentSelection = text;
+                openChat();
+                showBanner(text, 'Đoạn văn được chọn');
+            }
+        });
+
+        // ── Slide-level summarize (click slide area) ────────────────────────
+        const slideArea = document.querySelector('main > section .flex-1.overflow-auto');
+        if (slideArea) {
+            let slideSelected = false;
+            slideArea.addEventListener('dblclick', () => {
+                slideSelected = !slideSelected;
+                currentSelection = 'AI Product & Project Management — Bridging the gap between machine learning research and scalable commercial products.';
+                openChat();
+                showBanner(currentSelection, 'Slide đang xem');
+            });
+        }
+
+        bannerDismiss.addEventListener('click', hideBanner);
+
+        fab.addEventListener('click', () => {
+            if (chatAside.classList.contains('chat-open')) {
+                closeChat();
+            } else {
+                openChat();
+            }
+        });
+
+        chatCloseBtn.addEventListener('click', () => closeChat());
+        // ── Micro-interactions for buttons ─────────────────────────────────
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+
+        // Simple mock for text focus glow
+        const chatInput = document.querySelector('textarea');
+        const inputContainer = chatInput.parentElement;
+        chatInput.addEventListener('focus', () => {
+            inputContainer.classList.add('shadow-[0_0_15px_rgba(0,166,208,0.15)]');
+        });
+        chatInput.addEventListener('blur', () => {
+            inputContainer.classList.remove('shadow-[0_0_15px_rgba(0,166,208,0.15)]');
+        });
+    </script>
+</body>
+
+</html>
